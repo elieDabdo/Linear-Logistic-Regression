@@ -48,7 +48,7 @@ class L2RegularizedLinearRegression:
         return yh
 
 class GradientDescent:
-    def __init__(self, learning_rate=.001, max_iters=5e3, epsilon=1e-8, momentum=0, batch_size=None):
+    def __init__(self, learning_rate=.001, max_iters=1e4, epsilon=1e-8, momentum=0, batch_size=None):
         self.learning_rate = learning_rate
         self.max_iters = max_iters
         self.epsilon = epsilon

@@ -10,9 +10,11 @@ def mse(yh, y):
     mean_sqe = 0
     yh = pd.DataFrame(yh)
     y = pd.DataFrame(y)
+    yh = yh.rename(columns={0: 'Y1', 1: 'Y2'})
+    y = y.rename(columns={6:"Y1", 7:"Y2"})
     for i in range(len(y)):
         yh_i = yh.iloc[i]
-        y_i = y.iloc[i]
+        y_i = y.iloc[i]        
         mean_sqe += ((yh_i-y_i).mean() ** 2)
     return mean_sqe / len(y)
 
@@ -47,40 +49,52 @@ def f1_score(yh, y):
         return (2*precision*recall)/(precision+recall)
 
 def logistic(x):
-    return map(lambda x : 1.0 / (1.0 + math.exp(-x)), x)
+    x = pd.DataFrame(x)
+    return x.applymap(lambda x : 1.0 / (1.0 + math.exp(-x)))
 
 def polynomial1(x): #polynomial k=-0.5
-    return map(lambda x : x ** -0.5, x)
+    x = pd.DataFrame(x)
+    return x.applymap(lambda x : x ** -0.5)
     
 def polynomial2(x): #polynomial k=0.5
-    return map(lambda x : x ** 0.5, x)
+    x = pd.DataFrame(x)
+    return x.applymap(lambda x : x ** 0.5)
     
 def polynomial3(x): #polynomial k=2
-    return map(lambda x : x ** 2, x)
+    x = pd.DataFrame(x)
+    return x.applymap(lambda x : x ** 2)
     
 def gaussian(x, k, s=1):
+    x = pd.DataFrame(x)
     return math.exp(-((x-k) ** 2) / (s ** 2))
 
 def gaussian1(x): #gaussian k=-0.5
-    return map(lambda x : gaussian(x, k=-0.5), x)
+    x = pd.DataFrame(x)
+    return x.applymap(lambda x : gaussian(x, k=-0.5))
     
 def gaussian2(x): #gaussian k=0
-    return map(lambda x : gaussian(x, k=0), x)
+    x = pd.DataFrame(x)
+    return x.applymap(lambda x : gaussian(x, k=0))
     
 def gaussian3(x): #gaussian k=0.5
-    return map(lambda x : gaussian(x, k=0.5), x)
+    x = pd.DataFrame(x)
+    return x.applymap(lambda x : gaussian(x, k=0.5))
     
 def sigmoid(x, k, s=1):
+    x = pd.DataFrame(x)
     return 1.0 / (1 + math.exp(-(x-k)/s))
 
 def sigmoid1(x): #sigmoid k=-0.5
-    return map(lambda x : sigmoid(x, k=-0.5), x)
+    x = pd.DataFrame(x)
+    return x.applymap(lambda x : sigmoid(x, k=-0.5))
     
 def sigmoid2(x): #sigmoid k=0
-    return map(lambda x : sigmoid(x, k=0), x)
+    x = pd.DataFrame(x)
+    return x.applymap(lambda x : sigmoid(x, k=0))
     
 def sigmoid3(x): #sigmoid k=0.5
-    return map(lambda x : sigmoid(x, k=0.5), x)
+    x = pd.DataFrame(x)
+    return x.applymap(lambda x : sigmoid(x, k=0.5))
 
 regression_file = "raw_datasets/ENB2012_data.xlsx"
 classification_file = "raw_datasets/Qualitative_Bankruptcy.data.txt"
@@ -238,7 +252,7 @@ def runLearningRateExperiment():
     test_performance_to_learning_rate = {}
     train_performance_to_learning_rate = {}
 
-    for lr in [0.0001, 0.001, 0.01, 0.1]:
+    for lr in [0.001, 0.01, 0.1, 0.5, 1.0, 5.0, 10.0]:
         gradient = GradientDescent(learning_rate=lr, batch_size=None)
         r_train, r_test = clean(regression_file, 0.8)
         r_train_X = r_train.iloc[:,:8]
@@ -267,7 +281,7 @@ def runLearningRateExperiment():
     test_performance_to_learning_rate = {}
     train_performance_to_learning_rate = {}
 
-    for lr in [0.0001, 0.001, 0.01, 0.1]:
+    for lr in [0.001, 0.01, 0.1, 0.5, 1.0, 5.0, 10.0]:
         gradient = GradientDescent(learning_rate=lr, batch_size=None)
         c_train, c_test = clean(classification_file, 0.8)
         c_train_X = c_train.iloc[:,:6]
@@ -353,7 +367,7 @@ def runL2RegularizationExperiment():
     test_performance_to_L2 = {}
     train_performance_to_L2 = {}
 
-    for lambdaa in [0.01, 0.1, 1.0, 10]:
+    for lambdaa in [0.1, 1.0, 5, 10]:
         model = RegressionWithBasesAndRegularization(l2_lambda=lambdaa)
         gradient = GradientDescent(batch_size=None)
         r_train, r_test = clean(regression_file, 0.8)
@@ -382,7 +396,7 @@ def runL2RegularizationExperiment():
     test_performance_to_L2 = {}
     train_performance_to_L2 = {}
 
-    for lambdaa in [0.01, 0.1, 1.0, 10]:
+    for lambdaa in [0.1, 1.0, 5, 10]:
         model = RegressionWithBasesAndRegularization(non_linear_base_fn=logistic, l2_lambda=lambdaa)
         gradient = GradientDescent(batch_size=None)
         c_train, c_test = clean(classification_file, 0.8)
@@ -412,7 +426,7 @@ def runL1RegularizationExperiment():
     test_performance_to_L1 = {}
     train_performance_to_L1 = {}
 
-    for lambdaa in [0.01, 0.1, 1.0, 10]:
+    for lambdaa in [0.1, 1.0, 5, 10]:
         model = RegressionWithBasesAndRegularization(non_linear_base_fn=logistic, l1_lambda=lambdaa)
         gradient = GradientDescent(batch_size=None)
         r_train, r_test = clean(regression_file, 0.8)
@@ -441,7 +455,7 @@ def runL1RegularizationExperiment():
     test_performance_to_L1 = {}
     train_performance_to_L1 = {}
 
-    for lambdaa in [0.01, 0.1, 1.0, 10]:
+    for lambdaa in [0.1, 1.0, 5, 10]:
         model = RegressionWithBasesAndRegularization(non_linear_base_fn=logistic, l1_lambda=lambdaa)
         gradient = GradientDescent(batch_size=None)
         c_train, c_test = clean(classification_file, 0.8)
