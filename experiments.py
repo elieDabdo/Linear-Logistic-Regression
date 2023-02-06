@@ -24,40 +24,37 @@ def logistic(x):
     return map(lambda x : 1.0 / (1.0 + math.exp(-x)), x)
 
 def polynomial1(x): #polynomial k=-0.5
-    #TODO
-    pass
+    return map(lambda x : x ** -0.5, x)
     
 def polynomial2(x): #polynomial k=0.5
-    #TODO
-    pass
+    return map(lambda x : x ** 0.5, x)
     
 def polynomial3(x): #polynomial k=2
-    #TODO
-    pass
+    return map(lambda x : x ** 2, x)
     
+def gaussian(x, k, s=1):
+    return math.exp(-((x-k) ** 2) / (s ** 2))
+
 def gaussian1(x): #gaussian k=-0.5
-    #TODO
-    pass
+    return map(lambda x : gaussian(x, k=-0.5), x)
     
 def gaussian2(x): #gaussian k=0
-    #TODO
-    pass
+    return map(lambda x : gaussian(x, k=0), x)
     
 def gaussian3(x): #gaussian k=0.5
-    #TODO
-    pass
+    return map(lambda x : gaussian(x, k=0.5), x)
     
+def sigmoid(x, k, s=1):
+    return 1.0 / (1 + math.exp(-(x-k)/s))
+
 def sigmoid1(x): #sigmoid k=-0.5
-    #TODO
-    pass
+    return map(lambda x : sigmoid(x, k=-0.5), x)
     
 def sigmoid2(x): #sigmoid k=0
-    #TODO
-    pass
+    return map(lambda x : sigmoid(x, k=0), x)
     
 def sigmoid3(x): #sigmoid k=0.5
-    #TODO
-    pass
+    return map(lambda x : sigmoid(x, k=0.5), x)
 
 regression_file = "raw_datasets\ENB2012_data.xlsx"
 classification_file = "raw_datasets\Qualitative_Bankruptcy.data.txt"
