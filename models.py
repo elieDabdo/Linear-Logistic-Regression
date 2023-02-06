@@ -101,11 +101,12 @@ class GradientDescent:
             w = w - self.learning_rate * grad         # weight update step
             t += 1
             i+=1
+        self.iterationsPerformed = i
         return w
 
 #gradient descent regression with options for any combinations of non-linear bases, l1, l2 regularization
 class RegressionWithBasesAndRegularization:
-    def __init__(self, add_bias=True, non_linear_base_fn = (lambda x: x), l1_lambda=0, l2_lambda=0):
+    def __init__(self, add_bias=True, non_linear_base_fn=(lambda x: x), l1_lambda=0, l2_lambda=0):
         self.add_bias = add_bias
         self.non_linear_base_fn = non_linear_base_fn
         self.l1_lambda = l1_lambda
@@ -121,6 +122,7 @@ class RegressionWithBasesAndRegularization:
         def gradient(x, y, w):                          # define the gradient function
             yh =  self.non_linear_base_fn(x @ w.T) 
             N, D = x.shape
+            yh = pd.DataFrame(yh)
             yh = yh.rename(columns={0: 'Y1', 1: 'Y2'})
             grad = .5*np.dot((yh - y).transpose(), x)/N
             if self.add_bias:
