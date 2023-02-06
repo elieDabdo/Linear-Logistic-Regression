@@ -19,14 +19,13 @@ def mse(yh, y):
 def f1_score(yh, y):
     yh = pd.DataFrame(yh)
     y = pd.DataFrame(y)
-    TP, TN, FP, FN =0,0,0,0
+    TP, TN, FP, FN = 0, 0, 0, 0
     for i in range(len(y)):
-        yh_i = yh.iloc[i]
-        print(yh_i)
-        y_i = y.iloc[i]
+        yh_i = float(yh.iloc[i])
+        y_i = float(y.iloc[i])
         if (yh_i <= 0.5):
-            yh_i =0
-        else : yh_i =1 
+            yh_i = 0
+        else : yh_i = 1 
 
         if ((yh_i==1) & (y_i==1)):
             TP+=1
@@ -39,10 +38,6 @@ def f1_score(yh, y):
     precision = TP/ (TP + FP)
     recall = TP /(TP +FN)
     return (2*precision*recall)/(precision+recall)
-        
-
-
-    pass
 
 def logistic(x):
     return map(lambda x : 1.0 / (1.0 + math.exp(-x)), x)
@@ -80,8 +75,8 @@ def sigmoid2(x): #sigmoid k=0
 def sigmoid3(x): #sigmoid k=0.5
     return map(lambda x : sigmoid(x, k=0.5), x)
 
-regression_file = "raw_datasets\ENB2012_data.xlsx"
-classification_file = "raw_datasets\Qualitative_Bankruptcy.data.txt"
+regression_file = "raw_datasets/ENB2012_data.xlsx"
+classification_file = "raw_datasets/Qualitative_Bankruptcy.data.txt"
 
 #visualize dataset distributions
 #clean(classification_file, 0.8, True)
@@ -144,10 +139,10 @@ def runTrainSizeExperiment():
         train_performance_to_train_size[train_split] = train_results
         test_performance_to_train_size[train_split] = test_results
 
-    plt.bar(range(len(train_performance_to_train_size)), list(train_performance_to_train_size.values()), tick_label=list(train_performance_to_train_size.keys()))
+    plt.plot(list(train_performance_to_train_size.keys()), list(train_performance_to_train_size.values()))
     plt.title("Logistic regression train set F1 score as a function of training size")
     plt.show()
-    plt.bar(range(len(test_performance_to_train_size)), list(test_performance_to_train_size.values()), tick_label=list(test_performance_to_train_size.keys()))
+    plt.plot(list(test_performance_to_train_size.keys()), list(test_performance_to_train_size.values()))
     plt.title("Logistic regression test set F1 score as a function of training size")
     plt.show()
 
@@ -180,13 +175,13 @@ def runMiniBatchExperiment():
             train_performance_to_batch_size[batch_size] = train_results
             num_iterations_to_batch_size[batch_size] = gradient.iterationsPerformed
 
-    plt.plot(range(len(train_performance_to_batch_size)), list(train_performance_to_batch_size.values()), tick_label=list(train_performance_to_batch_size.keys()))
+    plt.plot(list(train_performance_to_batch_size.keys()), list(train_performance_to_batch_size.values()))
     plt.title("Logistic regression train set F1 score as a function of mini-batch size")
     plt.show()
-    plt.bar(range(len(test_performance_to_batch_size)), list(test_performance_to_batch_size.values()), tick_label=list(test_performance_to_batch_size.keys()))
+    plt.plot(list(test_performance_to_batch_size.keys()), list(test_performance_to_batch_size.values()))
     plt.title("Logistic regression test set F1 score as a function of mini-batch size")
     plt.show()
-    plt.bar(range(len(num_iterations_to_batch_size)), list(num_iterations_to_batch_size.values()), tick_label=list(num_iterations_to_batch_size.keys()))
+    plt.plot(list(num_iterations_to_batch_size.keys()), list(num_iterations_to_batch_size.values()))
     plt.title("Logistic regression convergence speed (# iterations) as a function of mini-batch size")
     plt.show()
 
@@ -219,13 +214,13 @@ def runMiniBatchExperiment():
             train_performance_to_batch_size[batch_size] = train_results
             num_iterations_to_batch_size[batch_size] = gradient.iterationsPerformed
 
-    plt.bar(range(len(train_performance_to_batch_size)), list(train_performance_to_batch_size.values()), tick_label=list(train_performance_to_batch_size.keys()))
+    plt.plot(list(train_performance_to_batch_size.keys()), list(train_performance_to_batch_size.values()))
     plt.title("Gradient descent linear regression train set MSE as a function of mini-batch size")
     plt.show()
-    plt.bar(range(len(test_performance_to_batch_size)), list(test_performance_to_batch_size.values()), tick_label=list(test_performance_to_batch_size.keys()))
+    plt.plot(list(test_performance_to_batch_size.keys()), list(test_performance_to_batch_size.values()))
     plt.title("Gradient descent linear regression test set MSE as a function of mini-batch size")
     plt.show()
-    plt.bar(range(len(num_iterations_to_batch_size)), list(num_iterations_to_batch_size.values()), tick_label=list(num_iterations_to_batch_size.keys()))
+    plt.plot(list(num_iterations_to_batch_size.keys()), list(num_iterations_to_batch_size.values()))
     plt.title("Gradient descent linear regression convergence speed (# iterations) as a function of mini-batch size")
     plt.show()
 
@@ -251,10 +246,10 @@ def runLearningRateExperiment():
         test_performance_to_learning_rate[lr] = test_results
         train_performance_to_learning_rate[lr] = train_results
 
-    plt.bar(range(len(train_performance_to_learning_rate)), list(train_performance_to_learning_rate.values()), tick_label=list(train_performance_to_learning_rate.keys()))
+    plt.plot(list(train_performance_to_learning_rate.keys()), list(train_performance_to_learning_rate.values()))
     plt.title("Gradient descent linear regression train set MSE as a function of learning rate")
     plt.show()
-    plt.bar(range(len(test_performance_to_learning_rate)), list(test_performance_to_learning_rate.values()), tick_label=list(test_performance_to_learning_rate.keys()))
+    plt.plot(list(test_performance_to_learning_rate.keys()), list(test_performance_to_learning_rate.values()))
     plt.title("Gradient descent linear regression test set MSE as a function of learning rate")
     plt.show()
 
@@ -280,10 +275,10 @@ def runLearningRateExperiment():
         test_performance_to_learning_rate[lr] = test_results
         train_performance_to_learning_rate[lr] = train_results
 
-    plt.bar(range(len(train_performance_to_learning_rate)), list(train_performance_to_learning_rate.values()), tick_label=list(train_performance_to_learning_rate.keys()))
+    plt.plot(list(train_performance_to_learning_rate.keys()), list(train_performance_to_learning_rate.values()))
     plt.title("Logistic regression train set F1 score as a function of learning rate")
     plt.show()
-    plt.bar(range(len(test_performance_to_learning_rate)), list(test_performance_to_learning_rate.values()), tick_label=list(test_performance_to_learning_rate.keys()))
+    plt.plot(list(test_performance_to_learning_rate.keys()), list(test_performance_to_learning_rate.values()))
     plt.title("Logistic regression test set F1 score as a function of learning rate")
     plt.show()
 
@@ -309,10 +304,10 @@ def runMomentumExperiment():
         test_performance_to_momentum[momentum] = test_results
         train_performance_to_momentum[momentum] = train_results
 
-    plt.bar(range(len(train_performance_to_momentum)), list(train_performance_to_momentum.values()), tick_label=list(train_performance_to_momentum.keys()))
+    plt.plot(list(train_performance_to_momentum.keys()), list(train_performance_to_momentum.values()))
     plt.title("Gradient descent linear regression train set MSE as a function of momentum")
     plt.show()
-    plt.bar(range(len(test_performance_to_momentum)), list(test_performance_to_momentum.values()), tick_label=list(test_performance_to_momentum.keys()))
+    plt.plot(list(test_performance_to_momentum.keys()), list(test_performance_to_momentum.values()))
     plt.title("Gradient descent linear regression test set MSE as a function of momentum")
     plt.show()
 
@@ -338,10 +333,10 @@ def runMomentumExperiment():
         test_performance_to_momentum[momentum] = test_results
         train_performance_to_momentum[momentum] = train_results
 
-    plt.bar(range(len(train_performance_to_momentum)), list(train_performance_to_momentum.values()), tick_label=list(train_performance_to_momentum.keys()))
+    plt.plot(list(train_performance_to_momentum.keys()), list(train_performance_to_momentum.values()))
     plt.title("Logistic regression train set F1 score as a function of momentum")
     plt.show()
-    plt.bar(range(len(test_performance_to_momentum)), list(test_performance_to_momentum.values()), tick_label=list(test_performance_to_momentum.keys()))
+    plt.plot(list(test_performance_to_momentum.keys()), list(test_performance_to_momentum.values()))
     plt.title("Logistic regression test set F1 score as a function of momentum")
     plt.show()
 
@@ -367,10 +362,10 @@ def runL2RegularizationExperiment():
         test_performance_to_L2[lambdaa] = test_results
         train_performance_to_L2[lambdaa] = train_results
 
-    plt.bar(range(len(train_performance_to_L2)), list(train_performance_to_L2.values()), tick_label=list(train_performance_to_L2.keys()))
+    plt.plot(list(train_performance_to_L2.keys()), list(train_performance_to_L2.values()))
     plt.title("Gradient descent linear regression train set MSE as a function of L2 regularization strength")
     plt.show()
-    plt.bar(range(len(test_performance_to_L2)), list(test_performance_to_L2.values()), tick_label=list(test_performance_to_L2.keys()))
+    plt.plot(list(test_performance_to_L2.keys()), list(test_performance_to_L2.values()))
     plt.title("Gradient descent linear regression test set MSE as a function of L2 regularization strength")
     plt.show()
 
@@ -396,10 +391,10 @@ def runL2RegularizationExperiment():
         test_performance_to_L2[lambdaa] = test_results
         train_performance_to_L2[lambdaa] = train_results
 
-    plt.bar(range(len(train_performance_to_L2)), list(train_performance_to_L2.values()), tick_label=list(train_performance_to_L2.keys()))
+    plt.plot(list(train_performance_to_L2.keys()), list(train_performance_to_L2.values()))
     plt.title("Logistic regression train set F1 score as a function of L2 regularization strength")
     plt.show()
-    plt.bar(range(len(test_performance_to_L2)), list(test_performance_to_L2.values()), tick_label=list(test_performance_to_L2.keys()))
+    plt.plot(list(test_performance_to_L2.keys()), list(test_performance_to_L2.values()))
     plt.title("Logistic regression test set F1 score as a function of L2 regularization strength")
     plt.show()
 
@@ -426,10 +421,10 @@ def runL1RegularizationExperiment():
         test_performance_to_L1[lambdaa] = test_results
         train_performance_to_L1[lambdaa] = train_results
 
-    plt.bar(range(len(train_performance_to_L1)), list(train_performance_to_L1.values()), tick_label=list(train_performance_to_L1.keys()))
+    plt.plot(list(train_performance_to_L1.keys()), list(train_performance_to_L1.values()))
     plt.title("Gradient descent linear regression train set MSE as a function of L1 regularization strength")
     plt.show()
-    plt.bar(range(len(test_performance_to_L1)), list(test_performance_to_L1.values()), tick_label=list(test_performance_to_L1.keys()))
+    plt.plot(list(test_performance_to_L1.keys()), list(test_performance_to_L1.values()))
     plt.title("Gradient descent linear regression test set MSE as a function of L1 regularization strength")
     plt.show()
 
@@ -455,10 +450,10 @@ def runL1RegularizationExperiment():
         test_performance_to_L1[lambdaa] = test_results
         train_performance_to_L1[lambdaa] = train_results
 
-    plt.bar(range(len(train_performance_to_L1)), list(train_performance_to_L1.values()), tick_label=list(train_performance_to_L1.keys()))
+    plt.plot(list(train_performance_to_L1.keys()), list(train_performance_to_L1.values()))
     plt.title("Logistic regression train set F1 score as a function of L1 regularization strength")
     plt.show()
-    plt.bar(range(len(test_performance_to_L1)), list(test_performance_to_L1.values()), tick_label=list(test_performance_to_L1.keys()))
+    plt.plot(list(test_performance_to_L1.keys()), list(test_performance_to_L1.values()))
     plt.title("Logistic regression test set F1 score as a function of L1 regularization strength")
     plt.show()
 
@@ -485,10 +480,10 @@ def runNonLinearBasesExperiment():
         test_performance_to_base[base_names[base]] = test_results
         train_performance_to_base[base_names[base]] = train_results
 
-    plt.bar(range(len(train_performance_to_base)), list(train_performance_to_base.values()), tick_label=list(train_performance_to_base.keys()))
+    plt.plot(list(train_performance_to_base.keys()), list(train_performance_to_base.values()))
     plt.title("Categorical train set F1 score as a function of non-linear base")
     plt.show()
-    plt.bar(range(len(test_performance_to_base)), list(test_performance_to_base.values()), tick_label=list(test_performance_to_base.keys()))
+    plt.plot(list(test_performance_to_base.keys()), list(test_performance_to_base.values()))
     plt.title("Categorical test set F1 score as a function of non-linear base")
     plt.show()
 
@@ -515,15 +510,14 @@ def runNonLinearBasesExperiment():
         test_performance_to_base[base_names[base]] = test_results
         train_performance_to_base[base_names[base]] = train_results
 
-    plt.bar(range(len(train_performance_to_base)), list(train_performance_to_base.values()), tick_label=list(train_performance_to_base.keys()))
+    plt.plot(list(train_performance_to_base.keys()), list(train_performance_to_base.values()))
     plt.title("Regression train set MSE as a function of non-linear base")
     plt.show()
-    plt.bar(range(len(test_performance_to_base)), list(test_performance_to_base.values()), tick_label=list(test_performance_to_base.keys()))
+    plt.plot(list(test_performance_to_base.keys()), list(test_performance_to_base.values()))
     plt.title("Regression test set MSE as a function of non-linear base")
     plt.show()
 
 runTrainSizeExperiment()
-exit()
 runMiniBatchExperiment()
 runMomentumExperiment()
 runNonLinearBasesExperiment()

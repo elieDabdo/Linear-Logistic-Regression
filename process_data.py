@@ -156,7 +156,7 @@ def visualizeStats(dataframe, discrete):
 
 
 if __name__ == "__main__":
-    classification_file = "raw_datasets\Qualitative_Bankruptcy.data.txt"
-    regression_file = "raw_datasets\ENB2012_data.xlsx"
+    classification_file = "raw_datasets/Qualitative_Bankruptcy.data.txt"
+    regression_file = "raw_datasets/ENB2012_data.xlsx"
     clean(classification_file, 0.8, True)
     clean(regression_file, 0.8, True)

@@ -120,7 +120,7 @@ class RegressionWithBasesAndRegularization:
             x = np.column_stack([x,np.ones(N)])
         N,D = x.shape
         def gradient(x, y, w):                          # define the gradient function
-            yh =  self.non_linear_base_fn(x @ w.T) 
+            yh = self.non_linear_base_fn(x @ w.T) 
             N, D = x.shape
             yh = pd.DataFrame(yh)
             y = pd.DataFrame(y)
@@ -146,7 +146,7 @@ class RegressionWithBasesAndRegularization:
         if self.add_bias:
             N = x.shape[0]
             x = np.column_stack([x,np.ones(N)])
-        yh = x@self.w.T
+        yh = self.non_linear_base_fn(x@self.w.T)
         return yh
 
     
