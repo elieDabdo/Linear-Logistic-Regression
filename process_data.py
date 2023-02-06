@@ -21,7 +21,6 @@ def handle_non_numerical_data(df):
                     x+=1
 
             df[column] = list(map(convert_to_int, df[column]))
-
     return df
 
 def clean(file, split, computeStats=False):
@@ -42,7 +41,6 @@ def clean(file, split, computeStats=False):
         if computeStats: visualizeStats(dataframe, discrete=True)
         dataframe = handle_non_numerical_data(dataframe)
     dataframe = dataframe.sample(frac=1).reset_index(drop=True) 
-    print(dataframe)
     length = len(dataframe)
     return dataframe[:int(length*split)], dataframe[int(length*split):]
     

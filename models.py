@@ -90,7 +90,7 @@ class GradientDescent:
         grad = np.inf
         t = 1
         i = 1
-        while np.linalg.norm(grad) > self.epsilon and i< self.max_iters:
+        while np.linalg.norm(grad) > self.epsilon and i < self.max_iters:
             if (t-1)>=len(batches):
                 batches = self.make_batches(x,y, self.batch_size)
                 t=1
@@ -123,10 +123,12 @@ class RegressionWithBasesAndRegularization:
             yh =  self.non_linear_base_fn(x @ w.T) 
             N, D = x.shape
             yh = pd.DataFrame(yh)
+            y = pd.DataFrame(y)
             yh = yh.rename(columns={0: 'Y1', 1: 'Y2'})
+            y = y.rename(columns={6:"Y1", 7:"Y2"})
             grad = .5*np.dot((yh - y).transpose(), x)/N
             if self.add_bias:
-                if len(y.iloc[0])>1:
+                if len(y.columns) > 1:
                     grad[:,1:] += self.l1_lambda * np.sign(w[:,1:])
                     grad[:,1:] += self.l2_lambda * w[:,1:]
                 else:
@@ -136,7 +138,7 @@ class RegressionWithBasesAndRegularization:
                 grad += self.l1_lambda * np.sign(w)
                 grad += self.l2_lambda * w
             return grad
-        w0 = np.zeros((len(y.iloc[0]),D))                                # initialize the weights to 0
+        w0 = np.zeros((len(pd.DataFrame(y).columns),D))                                # initialize the weights to 0
         self.w = optimizer.run(gradient, x, y, w0)      # run the optimizer to get the optimal weights
         return self
     
