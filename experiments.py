@@ -17,7 +17,31 @@ def mse(yh, y):
     return mean_sqe / len(y)
 
 def f1_score(yh, y):
-    #TODO
+    yh = pd.DataFrame(yh)
+    y = pd.DataFrame(y)
+    TP, TN, FP, FN =0,0,0,0
+    for i in range(len(y)):
+        yh_i = yh.iloc[i]
+        print(yh_i)
+        y_i = y.iloc[i]
+        if (yh_i <= 0.5):
+            yh_i =0
+        else : yh_i =1 
+
+        if ((yh_i==1) & (y_i==1)):
+            TP+=1
+        if ((yh_i==0) & (y_i==0)):
+            TN+=1
+        if ((yh_i==0) & (y_i==1)):
+            FN+=1
+        if ((yh_i==1) & (y_i==0)):
+            FP+=1
+    precision = TP/ (TP + FP)
+    recall = TP /(TP +FN)
+    return (2*precision*recall)/(precision+recall)
+        
+
+
     pass
 
 def logistic(x):
