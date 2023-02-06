@@ -35,9 +35,16 @@ def f1_score(yh, y):
             FN+=1
         if ((yh_i==1) & (y_i==0)):
             FP+=1
-    precision = TP/ (TP + FP)
-    recall = TP /(TP +FN)
-    return (2*precision*recall)/(precision+recall)
+    if TP == 0:
+        precision = 0
+        recall = 0
+    else:
+        precision = TP/ (TP + FP)
+        recall = TP /(TP +FN)
+    if precision == 0 and recall == 0:
+        return 0
+    else:
+        return (2*precision*recall)/(precision+recall)
 
 def logistic(x):
     return map(lambda x : 1.0 / (1.0 + math.exp(-x)), x)
@@ -342,13 +349,13 @@ def runMomentumExperiment():
 
 def runL2RegularizationExperiment():
     #L2 regularization experiments for linear regression
-    model = RegressionWithBasesAndRegularization()
 
     test_performance_to_L2 = {}
     train_performance_to_L2 = {}
 
     for lambdaa in [0.01, 0.1, 1.0, 10]:
-        gradient = GradientDescent(l2_lambda=lambdaa, batch_size=None)
+        model = RegressionWithBasesAndRegularization(l2_lambda=lambdaa)
+        gradient = GradientDescent(batch_size=None)
         r_train, r_test = clean(regression_file, 0.8)
         r_train_X = r_train.iloc[:,:8]
         r_train_Y = r_train.iloc[:,8:]
@@ -371,13 +378,13 @@ def runL2RegularizationExperiment():
 
 
     #L2 regularization experiments for logistic regression
-    model = RegressionWithBasesAndRegularization(non_linear_base_fn=logistic)
 
     test_performance_to_L2 = {}
     train_performance_to_L2 = {}
 
     for lambdaa in [0.01, 0.1, 1.0, 10]:
-        gradient = GradientDescent(l2_lambda=lambdaa, batch_size=None)
+        model = RegressionWithBasesAndRegularization(non_linear_base_fn=logistic, l2_lambda=lambdaa)
+        gradient = GradientDescent(batch_size=None)
         c_train, c_test = clean(classification_file, 0.8)
         c_train_X = c_train.iloc[:,:6]
         c_train_Y = c_train.iloc[:,6]
@@ -401,13 +408,13 @@ def runL2RegularizationExperiment():
 
 def runL1RegularizationExperiment():
     #L1 regularization experiments for linear regression
-    model = RegressionWithBasesAndRegularization()
 
     test_performance_to_L1 = {}
     train_performance_to_L1 = {}
 
     for lambdaa in [0.01, 0.1, 1.0, 10]:
-        gradient = GradientDescent(l1_lambda=lambdaa, batch_size=None)
+        model = RegressionWithBasesAndRegularization(non_linear_base_fn=logistic, l1_lambda=lambdaa)
+        gradient = GradientDescent(batch_size=None)
         r_train, r_test = clean(regression_file, 0.8)
         r_train_X = r_train.iloc[:,:8]
         r_train_Y = r_train.iloc[:,8:]
@@ -430,13 +437,13 @@ def runL1RegularizationExperiment():
 
 
     #L1 regularization experiments for logistic regression
-    model = RegressionWithBasesAndRegularization(non_linear_base_fn=logistic)
 
     test_performance_to_L1 = {}
     train_performance_to_L1 = {}
 
     for lambdaa in [0.01, 0.1, 1.0, 10]:
-        gradient = GradientDescent(l1_lambda=lambdaa, batch_size=None)
+        model = RegressionWithBasesAndRegularization(non_linear_base_fn=logistic, l1_lambda=lambdaa)
+        gradient = GradientDescent(batch_size=None)
         c_train, c_test = clean(classification_file, 0.8)
         c_train_X = c_train.iloc[:,:6]
         c_train_Y = c_train.iloc[:,6]
@@ -517,10 +524,10 @@ def runNonLinearBasesExperiment():
     plt.title("Regression test set MSE as a function of non-linear base")
     plt.show()
 
-runTrainSizeExperiment()
+#runLearningRateExperiment()
+#runTrainSizeExperiment()
 runMiniBatchExperiment()
-runMomentumExperiment()
-runNonLinearBasesExperiment()
-runLearningRateExperiment()
-runL2RegularizationExperiment()
-runL1RegularizationExperiment()
+#runMomentumExperiment()
+#runNonLinearBasesExperiment()
+#runL2RegularizationExperiment()
+#runL1RegularizationExperiment()

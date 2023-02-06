@@ -48,7 +48,7 @@ class L2RegularizedLinearRegression:
         return yh
 
 class GradientDescent:
-    def __init__(self, learning_rate=.001, max_iters=1e4, epsilon=1e-8, momentum=0, batch_size=None):
+    def __init__(self, learning_rate=.001, max_iters=5e3, epsilon=1e-8, momentum=0, batch_size=None):
         self.learning_rate = learning_rate
         self.max_iters = max_iters
         self.epsilon = epsilon
@@ -62,12 +62,13 @@ class GradientDescent:
         if x.ndim == 1:
             x = x[:, None]                      #add a dimension for the features
         batches = []
+        x_length = len(x[0])
         datax = pd.DataFrame(x)
         datay =pd.DataFrame(y)
         data = pd.concat([datax,datay],axis=1, join='inner')
         data = data.sample(frac=1).reset_index(drop=True)
-        x = data.iloc[:,:9]
-        y = data.iloc[:,9:]
+        x = data.iloc[:,:x_length]
+        y = data.iloc[:,x_length:]
         numberOfRowsData = x.shape[0]        #number of rows in our data
         
         i = 0
