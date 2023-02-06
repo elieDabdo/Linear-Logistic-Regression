@@ -62,6 +62,10 @@ def sigmoid3(x): #sigmoid k=0.5
 regression_file = "raw_datasets\ENB2012_data.xlsx"
 classification_file = "raw_datasets\Qualitative_Bankruptcy.data.txt"
 
+#visualize dataset distributions
+clean(classification_file, 0.8, True)
+clean(regression_file, 0.8, True)
+
 model = LinearRegression()
 
 train_performance_to_train_size = {}
