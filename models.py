@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 #closed form linear regression
 class LinearRegression:
@@ -47,23 +48,59 @@ class L2RegularizedLinearRegression:
         return yh
 
 class GradientDescent:
-    def __init__(self, learning_rate=.001, max_iters=1e4, epsilon=1e-8, momentum=0):
+    def __init__(self, learning_rate=.001, max_iters=1e4, epsilon=1e-8, momentum=0, batch_size=None):
         self.learning_rate = learning_rate
         self.max_iters = max_iters
         self.epsilon = epsilon
         self.momentum = momentum
         self.previousGrad = None
+        self.batch_size = batch_size
+
+    def make_batches(self, x, y, sizeOfMiniBatch):
+        if (sizeOfMiniBatch==None):
+            return [(x,y)]
+        if x.ndim == 1:
+            x = x[:, None]                      #add a dimension for the features
+        batches = []
+        datax = pd.DataFrame(x)
+        datay =pd.DataFrame(y)
+        data = pd.concat([datax,datay],axis=1, join='inner')
+        data = data.sample(frac=1).reset_index(drop=True)
+        x = data.iloc[:,:9]
+        y = data.iloc[:,9:]
+        numberOfRowsData = x.shape[0]        #number of rows in our data
+        
+        i = 0
+        for i in range(int(numberOfRowsData/sizeOfMiniBatch)):
+            endOfBatch= (i+1)*sizeOfMiniBatch           
+            if endOfBatch<numberOfRowsData: #if end of the batch is still within range allowed
+                single_batch_x = x.iloc[i * sizeOfMiniBatch:endOfBatch, :] #slice into a batch
+                single_batch_y = y.iloc[i * sizeOfMiniBatch:endOfBatch, :] #slice into a batch
+                batches.append((single_batch_x, single_batch_y))
+            else: #if end of batch not within range 
+                single_batch_x = x.iloc[i * sizeOfMiniBatch:numberOfRowsData, :] #slice into a batch
+                single_batch_y = y.iloc[i * sizeOfMiniBatch:numberOfRowsData, :] #slice into a batch
+                batches.append((single_batch_x, single_batch_y))
+        return batches
             
     def run(self, gradient_fn, x, y, w):
+
+        batches = self.make_batches(x,y, self.batch_size)
+
         grad = np.inf
         t = 1
-        while np.linalg.norm(grad) > self.epsilon and t < self.max_iters:
-            grad = gradient_fn(x, y, w)               # compute the gradient with present weight
-            if previousGrad == None: previousGrad = grad
-            grad = grad*(1.0-self.momentum) + previousGrad*self.momentum
-            previousGrad = grad
+        i = 1
+        while np.linalg.norm(grad) > self.epsilon and i< self.max_iters:
+            if (t-1)>=len(batches):
+                batches = self.make_batches(x,y, self.batch_size)
+                t=1
+            grad = gradient_fn(batches[t-1][0], batches[t-1][1], w)  # compute the gradient with present weight
+            if self.previousGrad is None: self.previousGrad = grad
+            grad = grad*(1.0-self.momentum) + self.previousGrad*self.momentum
+            self.previousGrad = grad
             w = w - self.learning_rate * grad         # weight update step
             t += 1
+            i+=1
         return w
 
 #gradient descent regression with options for any combinations of non-linear bases, l1, l2 regularization
@@ -82,22 +119,30 @@ class RegressionWithBasesAndRegularization:
             x = np.column_stack([x,np.ones(N)])
         N,D = x.shape
         def gradient(x, y, w):                          # define the gradient function
-            yh =  self.non_linear_base_fn(x @ w) 
+            yh =  self.non_linear_base_fn(x @ w.T) 
             N, D = x.shape
-            grad = .5*np.dot(yh - y, x)/N
+            yh = yh.rename(columns={0: 'Y1', 1: 'Y2'})
+            grad = .5*np.dot((yh - y).transpose(), x)/N
             if self.add_bias:
-                grad[1:] += self.l1_lambda * np.sign(w[1:])
-                grad[1:] += self.l2_lambda * w[1:]
+                if len(y.iloc[0])>1:
+                    grad[:,1:] += self.l1_lambda * np.sign(w[:,1:])
+                    grad[:,1:] += self.l2_lambda * w[:,1:]
+                else:
+                    grad[1:] += self.l1_lambda * np.sign(w[1:])
+                    grad[1:] += self.l2_lambda * w[1:]
             else:
                 grad += self.l1_lambda * np.sign(w)
                 grad += self.l2_lambda * w
             return grad
-        w0 = np.zeros(D)                                # initialize the weights to 0
+        w0 = np.zeros((len(y.iloc[0]),D))                                # initialize the weights to 0
         self.w = optimizer.run(gradient, x, y, w0)      # run the optimizer to get the optimal weights
         return self
     
     def predict(self, x):
         if self.add_bias:
+            N = x.shape[0]
             x = np.column_stack([x,np.ones(N)])
-        yh = x@self.w
+        yh = x@self.w.T
         return yh
+
+    

@@ -1,10 +1,13 @@
 import numpy as np
-from models import LinearRegression, LogisticRegression, GradientDescent
+from models import LinearRegression, GradientDescent, RegressionWithBasesAndRegularization
 import matplotlib.pyplot as plt
 import pickle
+import pandas as pd
 
 def mse(yh, y):
     mean_sqe = [0,0]
+    yh = pd.DataFrame(yh)
+    y = pd.DataFrame(y)
     for i in range(len(y)):
         yh_i = float(yh.iloc[i][0])
         y_i = float(y.iloc[i][0])
@@ -32,6 +35,14 @@ r_test_Y = r_test.iloc[:,8:]
 model = LinearRegression()
 model.fit(r_train_X,r_train_Y)
 
-print(mse(model.predict(r_train_X), r_train_Y))
-print(mse(model.predict(r_test_X), r_test_Y))
-print(model.w)
+# print(mse(model.predict(r_train_X), r_train_Y))
+# print(mse(model.predict(r_test_X), r_test_Y))
+# print(model.w)
+
+model2= RegressionWithBasesAndRegularization()
+gradient = GradientDescent(batch_size=7)
+model2.fit(r_train_X, r_train_Y, gradient)
+
+print(mse(model2.predict(r_train_X), r_train_Y))
+print(mse(model2.predict(r_test_X), r_test_Y))
+print(model2.w)
