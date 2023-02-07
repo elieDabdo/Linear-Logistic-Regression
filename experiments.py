@@ -52,20 +52,19 @@ def logistic(x):
     x = pd.DataFrame(x)
     return x.applymap(lambda x : 1.0 / (1.0 + math.exp(-x)))
 
-def polynomial1(x): #polynomial k=-0.5
-    x = pd.DataFrame(x)
-    return x.applymap(lambda x : x ** -0.5)
-    
-def polynomial2(x): #polynomial k=0.5
-    x = pd.DataFrame(x)
-    return x.applymap(lambda x : x ** 0.5)
-    
-def polynomial3(x): #polynomial k=2
+def polynomial1(x): #polynomial k=2
     x = pd.DataFrame(x)
     return x.applymap(lambda x : x ** 2)
     
-def gaussian(x, k, s=1):
+def polynomial2(x): #polynomial k=3
     x = pd.DataFrame(x)
+    return x.applymap(lambda x : x ** 3)
+    
+def polynomial3(x): #polynomial k=4
+    x = pd.DataFrame(x)
+    return x.applymap(lambda x : x ** 4)
+    
+def gaussian(x, k, s=1):
     return math.exp(-((x-k) ** 2) / (s ** 2))
 
 def gaussian1(x): #gaussian k=-0.5
@@ -81,7 +80,6 @@ def gaussian3(x): #gaussian k=0.5
     return x.applymap(lambda x : gaussian(x, k=0.5))
     
 def sigmoid(x, k, s=1):
-    x = pd.DataFrame(x)
     return 1.0 / (1 + math.exp(-(x-k)/s))
 
 def sigmoid1(x): #sigmoid k=-0.5
@@ -252,7 +250,7 @@ def runLearningRateExperiment():
     test_performance_to_learning_rate = {}
     train_performance_to_learning_rate = {}
 
-    for lr in [0.001, 0.01, 0.1, 0.5, 1.0, 5.0, 10.0]:
+    for lr in [0.001, 0.01, 0.1, 0.5, 1.0]:
         gradient = GradientDescent(learning_rate=lr, batch_size=None)
         r_train, r_test = clean(regression_file, 0.8)
         r_train_X = r_train.iloc[:,:8]
@@ -281,7 +279,7 @@ def runLearningRateExperiment():
     test_performance_to_learning_rate = {}
     train_performance_to_learning_rate = {}
 
-    for lr in [0.001, 0.01, 0.1, 0.5, 1.0, 5.0, 10.0]:
+    for lr in [0.001, 0.01, 0.1, 0.5, 1.0]:
         gradient = GradientDescent(learning_rate=lr, batch_size=None)
         c_train, c_test = clean(classification_file, 0.8)
         c_train_X = c_train.iloc[:,:6]
@@ -367,7 +365,7 @@ def runL2RegularizationExperiment():
     test_performance_to_L2 = {}
     train_performance_to_L2 = {}
 
-    for lambdaa in [0.1, 1.0, 5, 10]:
+    for lambdaa in [0.1, 1.0, 5.0, 10.0]:
         model = RegressionWithBasesAndRegularization(l2_lambda=lambdaa)
         gradient = GradientDescent(batch_size=None)
         r_train, r_test = clean(regression_file, 0.8)
@@ -396,7 +394,7 @@ def runL2RegularizationExperiment():
     test_performance_to_L2 = {}
     train_performance_to_L2 = {}
 
-    for lambdaa in [0.1, 1.0, 5, 10]:
+    for lambdaa in [-10, -5, -1, -0.1, 0.1, 1.0, 5.0, 10.0]:
         model = RegressionWithBasesAndRegularization(non_linear_base_fn=logistic, l2_lambda=lambdaa)
         gradient = GradientDescent(batch_size=None)
         c_train, c_test = clean(classification_file, 0.8)
@@ -426,10 +424,10 @@ def runL1RegularizationExperiment():
     test_performance_to_L1 = {}
     train_performance_to_L1 = {}
 
-    for lambdaa in [0.1, 1.0, 5, 10]:
+    for lambdaa in [0.1, 1.0, 5.0, 10.0]:
         model = RegressionWithBasesAndRegularization(non_linear_base_fn=logistic, l1_lambda=lambdaa)
         gradient = GradientDescent(batch_size=None)
-        r_train, r_test = clean(regression_file, 0.8)
+        r_train, r_test = clean(regression_file, 0.5)
         r_train_X = r_train.iloc[:,:8]
         r_train_Y = r_train.iloc[:,8:]
         r_test_X = r_test.iloc[:,:8]
@@ -458,7 +456,7 @@ def runL1RegularizationExperiment():
     for lambdaa in [0.1, 1.0, 5, 10]:
         model = RegressionWithBasesAndRegularization(non_linear_base_fn=logistic, l1_lambda=lambdaa)
         gradient = GradientDescent(batch_size=None)
-        c_train, c_test = clean(classification_file, 0.8)
+        c_train, c_test = clean(classification_file, 0.5)
         c_train_X = c_train.iloc[:,:6]
         c_train_Y = c_train.iloc[:,6]
         c_test_X = c_test.iloc[:,:6]
@@ -497,7 +495,7 @@ def runNonLinearBasesExperiment():
         train_results = f1_score(model.predict(c_train_X), c_train_Y)
         test_results = f1_score(model.predict(c_test_X), c_test_Y)
         
-        base_names = {polynomial1:"polynomial k=-0.5", polynomial2:"polynomial k=0.5", polynomial3:"polynomial k=2", gaussian1:"gaussian k=-0.5", gaussian2:"gaussian k=0", gaussian3:"gaussian k=0.5", sigmoid1:"sigmoid k=-0.5", sigmoid2:"sigmoid k=0", sigmoid3:"sigmoid k=0.5"}
+        base_names = {polynomial1:"polynomial k=2", polynomial2:"polynomial k=3", polynomial3:"polynomial k=4", gaussian1:"gaussian k=-0.5", gaussian2:"gaussian k=0", gaussian3:"gaussian k=0.5", sigmoid1:"sigmoid k=-0.5", sigmoid2:"sigmoid k=0", sigmoid3:"sigmoid k=0.5"}
         test_performance_to_base[base_names[base]] = test_results
         train_performance_to_base[base_names[base]] = train_results
 
@@ -527,7 +525,7 @@ def runNonLinearBasesExperiment():
         train_results = mse(model.predict(r_train_X), r_train_Y)
         test_results = mse(model.predict(r_test_X), r_test_Y)
         
-        base_names = {polynomial1:"polynomial k=-0.5", polynomial2:"polynomial k=0.5", polynomial3:"polynomial k=2", gaussian1:"gaussian k=-0.5", gaussian2:"gaussian k=0", gaussian3:"gaussian k=0.5", sigmoid1:"sigmoid k=-0.5", sigmoid2:"sigmoid k=0", sigmoid3:"sigmoid k=0.5"}
+        base_names = {polynomial1:"polynomial k=2", polynomial2:"polynomial k=3", polynomial3:"polynomial k=4", gaussian1:"gaussian k=-0.5", gaussian2:"gaussian k=0", gaussian3:"gaussian k=0.5", sigmoid1:"sigmoid k=-0.5", sigmoid2:"sigmoid k=0", sigmoid3:"sigmoid k=0.5"}
         test_performance_to_base[base_names[base]] = test_results
         train_performance_to_base[base_names[base]] = train_results
 
@@ -540,8 +538,9 @@ def runNonLinearBasesExperiment():
 
 #runLearningRateExperiment()
 #runTrainSizeExperiment()
-runMiniBatchExperiment()
+
+#runMiniBatchExperiment()
 #runMomentumExperiment()
-#runNonLinearBasesExperiment()
+runNonLinearBasesExperiment()
 #runL2RegularizationExperiment()
 #runL1RegularizationExperiment()

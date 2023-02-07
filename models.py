@@ -64,9 +64,9 @@ class GradientDescent:
         batches = []
         x_length = len(x[0])
         datax = pd.DataFrame(x)
-        datay =pd.DataFrame(y)
+        datay = pd.DataFrame(y)
         data = pd.concat([datax,datay],axis=1, join='inner')
-        data = data.sample(frac=1).reset_index(drop=True)
+        #data = data.sample(frac=1, random_state=1).reset_index(drop=True)
         x = data.iloc[:,:x_length]
         y = data.iloc[:,x_length:]
         numberOfRowsData = x.shape[0]        #number of rows in our data
