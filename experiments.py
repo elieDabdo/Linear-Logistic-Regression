@@ -251,7 +251,7 @@ def runLearningRateExperiment():
     test_performance_to_learning_rate = {}
     train_performance_to_learning_rate = {}
 
-    for lr in [0.001, 0.01, 0.1, 0.5, 1.0]:
+    for lr in [0.01, 0.1, 0.5, 1.0]:
         gradient = GradientDescent(learning_rate=lr, batch_size=None)
         r_train, r_test = clean(regression_file, 0.8)
         r_train_X = r_train.iloc[:,:8]
@@ -280,7 +280,7 @@ def runLearningRateExperiment():
     test_performance_to_learning_rate = {}
     train_performance_to_learning_rate = {}
 
-    for lr in [0.001, 0.01, 0.1, 0.5, 1.0]:
+    for lr in [0.01, 0.1, 0.5, 1.0]:
         gradient = GradientDescent(learning_rate=lr, batch_size=None)
         c_train, c_test = clean(classification_file, 0.8)
         c_train_X = c_train.iloc[:,:6]
@@ -309,7 +309,7 @@ def runMomentumExperiment():
     test_performance_to_momentum = {}
     train_performance_to_momentum = {}
 
-    for momentum in [0.5, 0.6, 0.7, 0.8, 0.9, 0.99]:
+    for momentum in [0.5, 0.5, 0.5, 0.5, 0.5, 0.5]:
         gradient = GradientDescent(momentum=momentum, batch_size=None)
         r_train, r_test = clean(regression_file, 0.8)
         r_train_X = r_train.iloc[:,:8]
@@ -320,6 +320,9 @@ def runMomentumExperiment():
         model.fit(r_train_X, r_train_Y, gradient)
         train_results = mse(model.predict(r_train_X), r_train_Y)
         test_results = mse(model.predict(r_test_X), r_test_Y)
+
+        print(train_results)
+        print(test_results)
         
         test_performance_to_momentum[momentum] = test_results
         train_performance_to_momentum[momentum] = train_results
@@ -338,7 +341,7 @@ def runMomentumExperiment():
     test_performance_to_momentum = {}
     train_performance_to_momentum = {}
 
-    for momentum in [0.5, 0.6, 0.7, 0.8, 0.9, 0.99]:
+    for momentum in [0.5, 0.5, 0.5, 0.5, 0.5, 0.5]:
         gradient = GradientDescent(momentum=momentum, batch_size=None)
         c_train, c_test = clean(classification_file, 0.8)
         c_train_X = c_train.iloc[:,:6]
@@ -540,8 +543,8 @@ def runNonLinearBasesExperiment():
 #runLearningRateExperiment()
 #runTrainSizeExperiment()
 
-runMiniBatchExperiment()
-#runMomentumExperiment()
+#runMiniBatchExperiment()
+runMomentumExperiment()
 #runNonLinearBasesExperiment()
 #runL2RegularizationExperiment()
 #runL1RegularizationExperiment()
