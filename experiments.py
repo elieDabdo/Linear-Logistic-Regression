@@ -101,6 +101,7 @@ classification_file = "raw_datasets/Qualitative_Bankruptcy.data.txt"
 #clean(classification_file, 0.8, True)
 #clean(regression_file, 0.8, True)
 def runTrainSizeExperiment():
+
     model = LinearRegression()
 
     train_performance_to_train_size = {}
@@ -174,7 +175,7 @@ def runMiniBatchExperiment():
     num_iterations_to_batch_size = {}
 
     for batch_size in [8, 16, 32, 64, 128, None]:
-        gradient = GradientDescent(batch_size=batch_size)
+        gradient = GradientDescent(batch_size=batch_size, epsilon=1e-1)
         c_train, c_test = clean(classification_file, 0.8)
         c_train_X = c_train.iloc[:,:6]
         c_train_Y = c_train.iloc[:,6]
@@ -213,7 +214,7 @@ def runMiniBatchExperiment():
     num_iterations_to_batch_size = {}
 
     for batch_size in [8, 16, 32, 64, 128, None]:
-        gradient = GradientDescent(batch_size=batch_size)
+        gradient = GradientDescent(batch_size=batch_size, epsilon=1e0)
         r_train, r_test = clean(regression_file, 0.8)
         r_train_X = r_train.iloc[:,:8]
         r_train_Y = r_train.iloc[:,8:]
@@ -539,8 +540,8 @@ def runNonLinearBasesExperiment():
 #runLearningRateExperiment()
 #runTrainSizeExperiment()
 
-#runMiniBatchExperiment()
+runMiniBatchExperiment()
 #runMomentumExperiment()
-runNonLinearBasesExperiment()
+#runNonLinearBasesExperiment()
 #runL2RegularizationExperiment()
 #runL1RegularizationExperiment()
