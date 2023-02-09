@@ -309,7 +309,7 @@ def runMomentumExperiment():
     test_performance_to_momentum = {}
     train_performance_to_momentum = {}
 
-    for momentum in [0.5, 0.5, 0.5, 0.5, 0.5, 0.5]:
+    for momentum in [0.9, 0.9, 0.9, 0.9, 0.9, 0.9]:
         gradient = GradientDescent(momentum=momentum, batch_size=None)
         r_train, r_test = clean(regression_file, 0.8)
         r_train_X = r_train.iloc[:,:8]
@@ -327,41 +327,12 @@ def runMomentumExperiment():
         test_performance_to_momentum[momentum] = test_results
         train_performance_to_momentum[momentum] = train_results
 
-    plt.plot(list(train_performance_to_momentum.keys()), list(train_performance_to_momentum.values()))
-    plt.title("Gradient descent linear regression train set MSE as a function of momentum")
-    plt.show()
-    plt.plot(list(test_performance_to_momentum.keys()), list(test_performance_to_momentum.values()))
-    plt.title("Gradient descent linear regression test set MSE as a function of momentum")
-    plt.show()
-
-
-    #momentum experiments for logistic regression
-    model = RegressionWithBasesAndRegularization(non_linear_base_fn=logistic)
-
-    test_performance_to_momentum = {}
-    train_performance_to_momentum = {}
-
-    for momentum in [0.5, 0.5, 0.5, 0.5, 0.5, 0.5]:
-        gradient = GradientDescent(momentum=momentum, batch_size=None)
-        c_train, c_test = clean(classification_file, 0.8)
-        c_train_X = c_train.iloc[:,:6]
-        c_train_Y = c_train.iloc[:,6]
-        c_test_X = c_test.iloc[:,:6]
-        c_test_Y = c_test.iloc[:,6]
-
-        model.fit(c_train_X, c_train_Y, gradient)
-        train_results = f1_score(model.predict(c_train_X), c_train_Y)
-        test_results = f1_score(model.predict(c_test_X), c_test_Y)
-        
-        test_performance_to_momentum[momentum] = test_results
-        train_performance_to_momentum[momentum] = train_results
-
-    plt.plot(list(train_performance_to_momentum.keys()), list(train_performance_to_momentum.values()))
-    plt.title("Logistic regression train set F1 score as a function of momentum")
-    plt.show()
-    plt.plot(list(test_performance_to_momentum.keys()), list(test_performance_to_momentum.values()))
-    plt.title("Logistic regression test set F1 score as a function of momentum")
-    plt.show()
+    # plt.plot(list(train_performance_to_momentum.keys()), list(train_performance_to_momentum.values()))
+    # plt.title("Gradient descent linear regression train set MSE as a function of momentum")
+    # plt.show()
+    # plt.plot(list(test_performance_to_momentum.keys()), list(test_performance_to_momentum.values()))
+    # plt.title("Gradient descent linear regression test set MSE as a function of momentum")
+    # plt.show()
 
 def runL2RegularizationExperiment():
     #L2 regularization experiments for linear regression

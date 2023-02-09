@@ -40,7 +40,7 @@ def clean(file, split, computeStats=False):
         #compute statistics for discrete data
         if computeStats: visualizeStats(dataframe, discrete=True)
         dataframe = handle_non_numerical_data(dataframe)
-    dataframe = dataframe.sample(frac=1, random_state=10).reset_index(drop=True) 
+    dataframe = dataframe.sample(frac=1).reset_index(drop=True) 
     length = len(dataframe)
     return dataframe[:int(length*split)], dataframe[int(length*split):]
     
