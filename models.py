@@ -24,20 +24,21 @@ class LinearRegression:
 
 #closed form with L2 regularization
 class L2RegularizedLinearRegression:
-    def __init__(self, add_bias=True, l2_reg=0):
+    def __init__(self, add_bias=True, l2_lambda=0):
         self.add_bias = add_bias
         #l2 reg decides strength (coefficient) of regularization
-        self.l2_reg = l2_reg
+        self.l2_lambda = l2_lambda
         pass
             
     def fit(self, x, y):
         if x.ndim == 1:
             x = x[:, None]                         #add a dimension for the features
-        N = x.shape[0]
+        N, D = x.shape
         if self.add_bias:
-            x = np.column_stack([x,np.ones(N)])    #add bias by adding a constant feature of value 1
+            x = np.column_stack([x,np.ones(N)])    #add bias by adding a constant feature of value 1               #add a dimension for the features
+        N, D = x.shape
         #identity matrix might need to be size D
-        self.w = np.linalg.inv(x.T @ x + self.l2_reg*np.identity(N))@x.T@y
+        self.w = np.linalg.inv(x.T @ x + self.l2_lambda*np.identity(D))@x.T@y
         return self
     
     def predict(self, x):                       #add a dimension for the features
@@ -48,7 +49,7 @@ class L2RegularizedLinearRegression:
         return yh
 
 class GradientDescent:
-    def __init__(self, learning_rate=.001, max_iters=1e4, epsilon=1e-8, momentum=0, batch_size=None):
+    def __init__(self, learning_rate=.001, max_iters=2e4, epsilon=1e-8, momentum=0, batch_size=None):
         self.learning_rate = learning_rate
         self.max_iters = max_iters
         self.epsilon = epsilon

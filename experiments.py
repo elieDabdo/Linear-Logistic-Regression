@@ -1,5 +1,5 @@
 import numpy as np
-from models import LinearRegression, GradientDescent, RegressionWithBasesAndRegularization
+from models import LinearRegression, GradientDescent, RegressionWithBasesAndRegularization, L2RegularizedLinearRegression
 import matplotlib.pyplot as plt
 import pickle
 import pandas as pd
@@ -340,56 +340,27 @@ def runL2RegularizationExperiment():
     test_performance_to_L2 = {}
     train_performance_to_L2 = {}
 
-    for lambdaa in [0.1, 1.0, 5.0, 10.0]:
-        model = RegressionWithBasesAndRegularization(l2_lambda=lambdaa)
-        gradient = GradientDescent(batch_size=None)
+    for lambdaa in [0.1, 1.0, 10.0]:
+        model = L2RegularizedLinearRegression(l2_lambda=lambdaa)
         r_train, r_test = clean(regression_file, 0.8)
         r_train_X = r_train.iloc[:,:8]
         r_train_Y = r_train.iloc[:,8:]
         r_test_X = r_test.iloc[:,:8]
         r_test_Y = r_test.iloc[:,8:]
 
-        model.fit(r_train_X, r_train_Y, gradient)
+        model.fit(r_train_X, r_train_Y)
         train_results = mse(model.predict(r_train_X), r_train_Y)
         test_results = mse(model.predict(r_test_X), r_test_Y)
+        print("\nWeights:", model.w, "\nTrain error:", train_results, "\nTest error:", test_results)
         
         test_performance_to_L2[lambdaa] = test_results
         train_performance_to_L2[lambdaa] = train_results
 
     plt.plot(list(train_performance_to_L2.keys()), list(train_performance_to_L2.values()))
-    plt.title("Gradient descent linear regression train set MSE as a function of L2 regularization strength")
+    plt.title("Analytical linear regression train set MSE as a function of L2 regularization strength")
     plt.show()
     plt.plot(list(test_performance_to_L2.keys()), list(test_performance_to_L2.values()))
-    plt.title("Gradient descent linear regression test set MSE as a function of L2 regularization strength")
-    plt.show()
-
-
-    #L2 regularization experiments for logistic regression
-
-    test_performance_to_L2 = {}
-    train_performance_to_L2 = {}
-
-    for lambdaa in [-10, -5, -1, -0.1, 0.1, 1.0, 5.0, 10.0]:
-        model = RegressionWithBasesAndRegularization(non_linear_base_fn=logistic, l2_lambda=lambdaa)
-        gradient = GradientDescent(batch_size=None)
-        c_train, c_test = clean(classification_file, 0.8)
-        c_train_X = c_train.iloc[:,:6]
-        c_train_Y = c_train.iloc[:,6]
-        c_test_X = c_test.iloc[:,:6]
-        c_test_Y = c_test.iloc[:,6]
-
-        model.fit(c_train_X, c_train_Y, gradient)
-        train_results = f1_score(model.predict(c_train_X), c_train_Y)
-        test_results = f1_score(model.predict(c_test_X), c_test_Y)
-        
-        test_performance_to_L2[lambdaa] = test_results
-        train_performance_to_L2[lambdaa] = train_results
-
-    plt.plot(list(train_performance_to_L2.keys()), list(train_performance_to_L2.values()))
-    plt.title("Logistic regression train set F1 score as a function of L2 regularization strength")
-    plt.show()
-    plt.plot(list(test_performance_to_L2.keys()), list(test_performance_to_L2.values()))
-    plt.title("Logistic regression test set F1 score as a function of L2 regularization strength")
+    plt.title("Analytical linear regression test set MSE as a function of L2 regularization strength")
     plt.show()
 
 
@@ -399,7 +370,7 @@ def runL1RegularizationExperiment():
     test_performance_to_L1 = {}
     train_performance_to_L1 = {}
 
-    for lambdaa in [0.1, 1.0, 5.0, 10.0]:
+    for lambdaa in [0.1, 1.0, 10.0]:
         model = RegressionWithBasesAndRegularization(non_linear_base_fn=logistic, l1_lambda=lambdaa)
         gradient = GradientDescent(batch_size=None)
         r_train, r_test = clean(regression_file, 0.5)
@@ -411,6 +382,7 @@ def runL1RegularizationExperiment():
         model.fit(r_train_X, r_train_Y, gradient)
         train_results = mse(model.predict(r_train_X), r_train_Y)
         test_results = mse(model.predict(r_test_X), r_test_Y)
+        print("\nWeights:", model.w, "\nTrain error:", train_results, "\nTest error:", test_results)
         
         test_performance_to_L1[lambdaa] = test_results
         train_performance_to_L1[lambdaa] = train_results
@@ -420,35 +392,6 @@ def runL1RegularizationExperiment():
     plt.show()
     plt.plot(list(test_performance_to_L1.keys()), list(test_performance_to_L1.values()))
     plt.title("Gradient descent linear regression test set MSE as a function of L1 regularization strength")
-    plt.show()
-
-
-    #L1 regularization experiments for logistic regression
-
-    test_performance_to_L1 = {}
-    train_performance_to_L1 = {}
-
-    for lambdaa in [0.1, 1.0, 5, 10]:
-        model = RegressionWithBasesAndRegularization(non_linear_base_fn=logistic, l1_lambda=lambdaa)
-        gradient = GradientDescent(batch_size=None)
-        c_train, c_test = clean(classification_file, 0.5)
-        c_train_X = c_train.iloc[:,:6]
-        c_train_Y = c_train.iloc[:,6]
-        c_test_X = c_test.iloc[:,:6]
-        c_test_Y = c_test.iloc[:,6]
-
-        model.fit(c_train_X, c_train_Y, gradient)
-        train_results = f1_score(model.predict(c_train_X), c_train_Y)
-        test_results = f1_score(model.predict(c_test_X), c_test_Y)
-        
-        test_performance_to_L1[lambdaa] = test_results
-        train_performance_to_L1[lambdaa] = train_results
-
-    plt.plot(list(train_performance_to_L1.keys()), list(train_performance_to_L1.values()))
-    plt.title("Logistic regression train set F1 score as a function of L1 regularization strength")
-    plt.show()
-    plt.plot(list(test_performance_to_L1.keys()), list(test_performance_to_L1.values()))
-    plt.title("Logistic regression test set F1 score as a function of L1 regularization strength")
     plt.show()
 
 def runNonLinearBasesExperiment():
@@ -518,4 +461,4 @@ def runNonLinearBasesExperiment():
 runMomentumExperiment()
 #runNonLinearBasesExperiment()
 #runL2RegularizationExperiment()
-#runL1RegularizationExperiment()
+runL1RegularizationExperiment()
