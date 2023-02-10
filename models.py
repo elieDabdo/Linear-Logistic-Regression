@@ -49,7 +49,7 @@ class L2RegularizedLinearRegression:
         return yh
 
 class GradientDescent:
-    def __init__(self, learning_rate=.001, max_iters=2e4, epsilon=1e-8, momentum=0, batch_size=None):
+    def __init__(self, learning_rate=.001, max_iters=1e4, epsilon=1e-8, momentum=0, batch_size=None):
         self.learning_rate = learning_rate
         self.max_iters = max_iters
         self.epsilon = epsilon
@@ -108,10 +108,9 @@ class GradientDescent:
 
 #gradient descent regression with options for any combinations of non-linear bases, l1, l2 regularization
 class RegressionWithBasesAndRegularization:
-    def __init__(self, add_bias=True, non_linear_base_fn=(lambda x: x), l1_lambda=0, l2_lambda=0):
+    def __init__(self, add_bias=True, non_linear_base_fn=(lambda x: x), l2_lambda=0):
         self.add_bias = add_bias
         self.non_linear_base_fn = non_linear_base_fn
-        self.l1_lambda = l1_lambda
         self.l2_lambda = l2_lambda
             
     def fit(self, x, y, optimizer):
@@ -122,25 +121,26 @@ class RegressionWithBasesAndRegularization:
             x = np.column_stack([x,np.ones(N)])
         N,D = x.shape
         def gradient(x, y, w):                          # define the gradient function
-            yh = self.non_linear_base_fn(x @ w.T) 
+            yh = self.non_linear_base_fn(x @ w) 
             N, D = x.shape
+            #print(x.shape)
+            #print(yh.shape)
             yh = pd.DataFrame(yh)
             y = pd.DataFrame(y)
             yh = yh.rename(columns={0: 'Y1', 1: 'Y2'})
             y = y.rename(columns={6:"Y1", 7:"Y2"})
-            grad = .5*np.dot((yh - y).transpose(), x)/N
+            grad = .5*np.dot(x.T, (yh - y))/N
+            #print(grad.shape)
+            #print(w.shape)
             if self.add_bias:
                 if len(y.columns) > 1:
-                    grad[:,1:] += self.l1_lambda * np.sign(w[:,1:])
                     grad[:,1:] += self.l2_lambda * w[:,1:]
                 else:
-                    grad[1:] += self.l1_lambda * np.sign(w[1:])
                     grad[1:] += self.l2_lambda * w[1:]
             else:
-                grad += self.l1_lambda * np.sign(w)
                 grad += self.l2_lambda * w
             return grad
-        w0 = np.zeros((len(pd.DataFrame(y).columns),D))                                # initialize the weights to 0
+        w0 = np.zeros((D, len(pd.DataFrame(y).columns)))                                # initialize the weights to 0
         self.w = optimizer.run(gradient, x, y, w0)      # run the optimizer to get the optimal weights
         return self
     
@@ -148,7 +148,7 @@ class RegressionWithBasesAndRegularization:
         if self.add_bias:
             N = x.shape[0]
             x = np.column_stack([x,np.ones(N)])
-        yh = self.non_linear_base_fn(x@self.w.T)
+        yh = self.non_linear_base_fn(x@self.w)
         return yh
 
     

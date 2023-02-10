@@ -48,6 +48,9 @@ def f1_score(yh, y):
     else:
         return (2*precision*recall)/(precision+recall)
 
+def linear(x):
+    return x
+
 def logistic(x):
     x = pd.DataFrame(x)
     return x.applymap(lambda x : 1.0 / (1.0 + math.exp(-x)))
@@ -327,12 +330,12 @@ def runMomentumExperiment():
         test_performance_to_momentum[momentum] = test_results
         train_performance_to_momentum[momentum] = train_results
 
-    # plt.plot(list(train_performance_to_momentum.keys()), list(train_performance_to_momentum.values()))
-    # plt.title("Gradient descent linear regression train set MSE as a function of momentum")
-    # plt.show()
-    # plt.plot(list(test_performance_to_momentum.keys()), list(test_performance_to_momentum.values()))
-    # plt.title("Gradient descent linear regression test set MSE as a function of momentum")
-    # plt.show()
+    plt.plot(list(train_performance_to_momentum.keys()), list(train_performance_to_momentum.values()))
+    plt.title("Gradient descent linear regression train set MSE as a function of momentum")
+    plt.show()
+    plt.plot(list(test_performance_to_momentum.keys()), list(test_performance_to_momentum.values()))
+    plt.title("Gradient descent linear regression test set MSE as a function of momentum")
+    plt.show()
 
 def runL2RegularizationExperiment():
     #L2 regularization experiments for linear regression
@@ -361,37 +364,6 @@ def runL2RegularizationExperiment():
     plt.show()
     plt.plot(list(test_performance_to_L2.keys()), list(test_performance_to_L2.values()))
     plt.title("Analytical linear regression test set MSE as a function of L2 regularization strength")
-    plt.show()
-
-
-def runL1RegularizationExperiment():
-    #L1 regularization experiments for linear regression
-
-    test_performance_to_L1 = {}
-    train_performance_to_L1 = {}
-
-    for lambdaa in [0.1, 1.0, 10.0]:
-        model = RegressionWithBasesAndRegularization(non_linear_base_fn=logistic, l1_lambda=lambdaa)
-        gradient = GradientDescent(batch_size=None)
-        r_train, r_test = clean(regression_file, 0.5)
-        r_train_X = r_train.iloc[:,:8]
-        r_train_Y = r_train.iloc[:,8:]
-        r_test_X = r_test.iloc[:,:8]
-        r_test_Y = r_test.iloc[:,8:]
-
-        model.fit(r_train_X, r_train_Y, gradient)
-        train_results = mse(model.predict(r_train_X), r_train_Y)
-        test_results = mse(model.predict(r_test_X), r_test_Y)
-        print("\nWeights:", model.w, "\nTrain error:", train_results, "\nTest error:", test_results)
-        
-        test_performance_to_L1[lambdaa] = test_results
-        train_performance_to_L1[lambdaa] = train_results
-
-    plt.plot(list(train_performance_to_L1.keys()), list(train_performance_to_L1.values()))
-    plt.title("Gradient descent linear regression train set MSE as a function of L1 regularization strength")
-    plt.show()
-    plt.plot(list(test_performance_to_L1.keys()), list(test_performance_to_L1.values()))
-    plt.title("Gradient descent linear regression test set MSE as a function of L1 regularization strength")
     plt.show()
 
 def runNonLinearBasesExperiment():
@@ -453,12 +425,39 @@ def runNonLinearBasesExperiment():
     plt.plot(list(test_performance_to_base.keys()), list(test_performance_to_base.values()))
     plt.title("Regression test set MSE as a function of non-linear base")
     plt.show()
+    #non-linear bases experiments for regression on regression dataset
+
+    test_performance_to_base = {}
+    train_performance_to_base = {}
+
+    for base in [polynomial1, polynomial2, polynomial3, linear]:
+        model = RegressionWithBasesAndRegularization(non_linear_base_fn=base)
+        gradient = GradientDescent(batch_size=None)
+        r_train, r_test = clean(regression_file, 0.8)
+        r_train_X = r_train.iloc[:,:8]
+        r_train_Y = r_train.iloc[:,8:]
+        r_test_X = r_test.iloc[:,:8]
+        r_test_Y = r_test.iloc[:,8:]
+
+        model.fit(r_train_X, r_train_Y, gradient)
+        train_results = mse(model.predict(r_train_X), r_train_Y)
+        test_results = mse(model.predict(r_test_X), r_test_Y)
+        
+        base_names = {polynomial1:"polynomial k=2", polynomial2:"polynomial k=3", polynomial3:"polynomial k=4", linear:"linear (no base function)"}
+        test_performance_to_base[base_names[base]] = test_results
+        train_performance_to_base[base_names[base]] = train_results
+
+    plt.plot(list(train_performance_to_base.keys()), list(train_performance_to_base.values()))
+    plt.title("Regression train set MSE as a function of non-linear base")
+    plt.show()
+    plt.plot(list(test_performance_to_base.keys()), list(test_performance_to_base.values()))
+    plt.title("Regression test set MSE as a function of non-linear base")
+    plt.show()
 
 #runLearningRateExperiment()
 #runTrainSizeExperiment()
-
 #runMiniBatchExperiment()
-runMomentumExperiment()
+#runMomentumExperiment()
 #runNonLinearBasesExperiment()
-#runL2RegularizationExperiment()
-runL1RegularizationExperiment()
+runL2RegularizationExperiment()
+#runL1RegularizationExperiment()
